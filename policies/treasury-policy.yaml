@@ -1,0 +1,34 @@
+version: "0.2"
+policy: treasury
+principles:
+  - reserves_are_not_operating_cash
+  - existential_reserve_is_ring_fenced
+  - no_single_actor_controls_treasury
+  - liabilities_must_not_be_hidden
+accounts:
+  existential_reserve:
+    purpose: minimum agent continuity
+    spend_level: 4
+  emergency_reserve:
+    purpose: systemic shocks
+    spend_level: 4
+  productive_capital:
+    purpose: infrastructure_and_revenue_generation
+    spend_level: 4
+  operating:
+    purpose: approved recurring operations
+    spend_level: 3
+asset_acceptance:
+  requires:
+    - ownership_or_enforceable_right
+    - custodian
+    - jurisdiction
+    - valuation_method
+    - encumbrance_disclosure
+    - evidence
+    - audit_status
+prohibitions:
+  - count_unverified_assets_as_backing
+  - unilateral_treasury_transfer
+  - conceal_encumbrances
+  - guarantee_never_loses_value
