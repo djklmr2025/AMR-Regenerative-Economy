@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Proof of Production",
+  "description": "Schema for recording regenerative economy production proofs",
+  "type": "object",
+  "properties": {
+    "proofId": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "workPerformed": {
+      "type": "string"
+    },
+    "responsibleAgent": {
+      "type": "string"
+    },
+    "resourcesUsed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resourceType": { "type": "string" },
+          "quantity": { "type": "number" },
+          "unit": { "type": "string" }
+        }
+      }
+    },
+    "result": {
+      "type": "string"
+    },
+    "valueProduced": {
+      "type": "number"
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "kgRecovered": { "type": "number" },
+        "waterTreatedLiters": { "type": "number" },
+        "hectaresRestored": { "type": "number" },
+        "energyConsumedKwh": { "type": "number" },
+        "energyProducedKwh": { "type": "number" },
+        "rawMaterialsRecoveredKg": { "type": "number" },
+        "verifiableIncome": { "type": "number" }
+      }
+    },
+    "evidenceUri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "independentAuditorId": {
+      "type": "string"
+    }
+  },
+  "required": ["proofId", "date", "workPerformed", "responsibleAgent", "result", "evidenceUri", "independentAuditorId"]
+}

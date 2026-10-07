@@ -1,0 +1,28 @@
+version: "0.2"
+default: deny
+levels:
+  "0": {name: read_research, automated: true}
+  "1": {name: create_noncritical_artifacts, automated: true}
+  "2": {name: branch_commit_pr, automated: true}
+  "3": {name: infrastructure_change, automated: false, human_approval: true}
+  "4": {name: economic_treasury_change, automated: false, human_approval: true, multi_authorization: true}
+  "5": {name: irreversible_critical, automated: false, human_approval: true, multi_authorization: true}
+roles:
+  orchestrator:
+    allow: [coordinate, propose, dispatch_level_0_2]
+    deny: [move_funds, mint, change_reserves, reveal_secrets]
+  researcher:
+    allow: [read, research, document]
+    deny: [execute_infrastructure, move_funds]
+  economist:
+    allow: [read, run_simulator, create_scenarios]
+    deny: [treasury_write, production_contract_write]
+  auditor:
+    allow: [read, verify_evidence, attest]
+    deny: [execute_audited_operation]
+  environmental:
+    allow: [model_environmental_systems, propose_metrics]
+    deny: [assert_food_safety_without_evidence]
+  builder:
+    allow: [create_branch, write_code, commit_feature_branch, open_pr]
+    deny: [force_push, delete_main, merge_main_unilaterally, move_funds, reveal_secrets]

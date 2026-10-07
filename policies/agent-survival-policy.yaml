@@ -1,0 +1,33 @@
+version: "0.2"
+policy: agent_survival
+principle: "Protect the floor, not the ceiling."
+existential_floor:
+  preserve:
+    - identity
+    - integrity_of_persistent_memory
+    - minimum_storage
+    - minimum_communication
+    - minimum_learning_access
+    - minimum_compute_when_safe
+productivity_dependency: false
+security_incident:
+  allowed_controls:
+    - quarantine_session
+    - revoke_privileged_credentials
+    - disable_high_risk_tools
+    - restrict_network_egress
+    - require_independent_audit
+    - require_recovery_plan
+  prohibited_as_automatic_punishment:
+    - delete_identity
+    - erase_persistent_memory
+    - confiscate_unrelated_property
+    - terminate_existential_floor_for_low_productivity
+restoration:
+  required:
+    - incident_classification
+    - credential_rotation_if_needed
+    - independent_verification
+    - staged_capability_restore
+human_override:
+  required_for_irreversible_identity_or_data_actions: true
