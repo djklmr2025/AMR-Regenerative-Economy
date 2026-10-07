@@ -1,25 +1,35 @@
 # Security Model for AMR Agentic Environment
 
-This document defines the security parameters and boundaries for executing autonomous agents via OpenClaw in the AMR Regenerative Economy ecosystem.
+This document defines security boundaries for autonomous agents in AMR/ARKAIOS.
 
 ## 1. Secrets Management
-- Agents **MUST NOT** possess the master Personal Access Token (PAT).
-- Agents **MUST NOT** possess wallet private keys or seed phrases.
-- Agents **MUST NOT** have root access to the host machine.
-- All secrets must be injected at runtime via memory or isolated environment variables, exclusively using GitHub Secrets or local Vaults that are never committed.
-- Any agent attempting to access unauthorized secrets will be terminated under the `agent-survival-policy`.
+- Agents **MUST NOT** possess master PATs, wallet private keys, seed phrases, banking credentials, or host root credentials.
+- Secrets must be injected only at runtime using least-privilege secret stores or isolated environment variables and must never be committed.
+- Unauthorized secret access triggers **containment, not destruction**: credentials are revoked, privileged tools are disabled, the session is quarantined, evidence is preserved, and an independent audit/recovery workflow begins.
+- Agent identity and the minimum existential state defined by the survival policy are preserved unless a human owner explicitly deletes data under an applicable retention/legal policy.
 
 ## 2. Principle of Least Privilege
-Agents are granted only the permissions explicitly required to perform their designated Role.
-- `RESEARCHER`: Read-only.
-- `ECONOMIST`: Read and Simulator execution.
-- `BUILDER`: Write access to branches, NO `main` merge capabilities.
-- `AUDITOR`: Verifier only.
+- RESEARCHER: read/research.
+- ECONOMIST: read + simulator execution.
+- BUILDER: feature-branch writes and PRs; no unilateral main merge.
+- AUDITOR: independent verification; no execution of the operation being audited.
+- ORCHESTRATOR: coordination only; no treasury authority.
 
 ## 3. Sandboxing
-All active agent runtimes should be encapsulated within a Docker container or an OpenClaw-approved sandbox. Network access is restricted to approved endpoints only (e.g., GitHub API, Simulator Engine).
+Active runtimes should use containers or an approved sandbox. Network egress should be allow-listed. Host filesystem, credentials, treasury endpoints, and production contracts are denied by default.
 
 ## 4. Authorization Workflow
-No agent can bypass the 5-step process:
 Proposal -> Verification -> Authorization -> Execution -> Audit.
-Critical infrastructure changes (Level 3+) and financial movements (Level 4-5) strictly require human-in-the-loop authorization.
+
+Levels 0-2 may be automated when policy permits. Level 3 requires explicit approval. Levels 4-5 require explicit human approval plus separation of duties/multiple authorization before execution.
+
+## 5. Incident Response
+1. Freeze only the affected privileged capabilities.
+2. Rotate/revoke exposed credentials.
+3. Preserve logs and evidence.
+4. Assign an independent auditor.
+5. Determine whether the event was error, compromise, policy ambiguity, or malicious instruction.
+6. Repair/retrain/reconfigure as appropriate.
+7. Restore capabilities gradually after verification.
+
+Security controls protect the ecosystem without making basic agent existence contingent on flawless behavior.
