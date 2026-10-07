@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AMR Agent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "agentId",
+    "role",
+    "status",
+    "existentialFloor",
+    "createdAt"
+  ],
+  "properties": {
+    "agentId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role": {
+      "enum": [
+        "orchestrator",
+        "researcher",
+        "economist",
+        "auditor",
+        "environmental",
+        "builder",
+        "other"
+      ]
+    },
+    "status": {
+      "enum": [
+        "active",
+        "quarantined",
+        "recovering",
+        "restricted",
+        "inactive"
+      ]
+    },
+    "existentialFloor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identityPreserved",
+        "memoryIntegrityPreserved"
+      ],
+      "properties": {
+        "identityPreserved": {
+          "type": "boolean"
+        },
+        "memoryIntegrityPreserved": {
+          "type": "boolean"
+        },
+        "minimumCompute": {
+          "type": "number",
+          "minimum": 0
+        },
+        "minimumStorage": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastAuditAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}
