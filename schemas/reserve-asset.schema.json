@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AMR Reserve Asset",
+  "type": "object",
+  "required": ["asset_id", "category", "description", "custodian", "ownership_basis", "valuation", "audit"],
+  "properties": {
+    "asset_id": {"type": "string"},
+    "category": {
+      "type": "string",
+      "enum": ["cash", "commodity", "energy", "real_estate", "compute", "infrastructure", "inventory", "ip", "productive_asset", "other"]
+    },
+    "description": {"type": "string"},
+    "jurisdiction": {"type": "string"},
+    "custodian": {"type": "string"},
+    "ownership_basis": {"type": "string"},
+    "quantity": {"type": ["number", "null"]},
+    "unit": {"type": ["string", "null"]},
+    "valuation": {
+      "type": "object",
+      "required": ["amount", "currency", "as_of"],
+      "properties": {
+        "amount": {"type": "number", "minimum": 0},
+        "currency": {"type": "string"},
+        "as_of": {"type": "string", "format": "date-time"},
+        "method": {"type": "string"}
+      }
+    },
+    "encumbered_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+    "audit": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {"type": "string", "enum": ["unverified", "verified", "disputed", "expired"]},
+        "auditor": {"type": "string"},
+        "evidence_uri": {"type": "string"},
+        "verified_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}
