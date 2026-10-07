@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pasarela Read-Only Evidence Envelope v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "snapshotId",
+    "asOf",
+    "source",
+    "liabilities",
+    "settlementEvidence",
+    "integrity"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.3"
+    },
+    "snapshotId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "asOf": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system",
+        "environment"
+      ],
+      "properties": {
+        "system": {
+          "const": "Pasarela-de-pago-AMR"
+        },
+        "environment": {
+          "enum": [
+            "simulation",
+            "staging",
+            "production"
+          ]
+        }
+      }
+    },
+    "liabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "walletBalanceMinor",
+        "currency"
+      ],
+      "properties": {
+        "walletBalanceMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "const": "MXN"
+        },
+        "walletCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "settlementEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eligibleSettledMinor",
+        "encumberedMinor",
+        "currency",
+        "verificationStatus",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "eligibleSettledMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "encumberedMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "const": "MXN"
+        },
+        "verificationStatus": {
+          "enum": [
+            "PENDING",
+            "VERIFIED",
+            "DISPUTED",
+            "REJECTED"
+          ]
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "reference",
+              "hash"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "stripe_settlement",
+                  "bank_statement",
+                  "custody_attestation",
+                  "ledger_reconciliation"
+                ]
+              },
+              "reference": {
+                "type": "string",
+                "minLength": 1
+              },
+              "hash": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ledgerHash",
+        "generatedBy"
+      ],
+      "properties": {
+        "ledgerHash": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generatedBy": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
