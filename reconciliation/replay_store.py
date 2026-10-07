@@ -31,23 +31,28 @@ class SQLiteReplayStore(ReplayStore):
         return sqlite3.connect(self.db_path, timeout=self.timeout_seconds)
 
     def _init_db(self):
+        conn = None
         try:
-            with self._connect() as conn:
-                conn.execute("PRAGMA journal_mode=WAL")
-                conn.execute("PRAGMA busy_timeout=5000")
-                conn.execute("""
-                    CREATE TABLE IF NOT EXISTS seen_snapshots (
-                        snapshot_id TEXT PRIMARY KEY,
-                        expires_at REAL NOT NULL,
-                        consumed_at REAL NOT NULL
-                    )
-                """)
-                conn.execute(
-                    "CREATE INDEX IF NOT EXISTS idx_expires_at "
-                    "ON seen_snapshots (expires_at)"
+            conn = self._connect()
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("PRAGMA busy_timeout=5000")
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS seen_snapshots (
+                    snapshot_id TEXT PRIMARY KEY,
+                    expires_at REAL NOT NULL,
+                    consumed_at REAL NOT NULL
                 )
+            """)
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_expires_at "
+                "ON seen_snapshots (expires_at)"
+            )
+            conn.commit()
         except sqlite3.Error as exc:
             raise ReplayStoreError("replay store initialization failed") from exc
+        finally:
+            if conn is not None:
+                conn.close()
 
     def consume(self, snapshot_id: str, expires_at: float) -> bool:
         if not isinstance(snapshot_id, str) or not snapshot_id:
@@ -56,17 +61,29 @@ class SQLiteReplayStore(ReplayStore):
             raise ReplayStoreError("expires_at must be numeric")
         if not math.isfinite(expires_at):
             raise ReplayStoreError("expires_at must be finite")
+        conn = None
         try:
-            with self._connect() as conn:
-                conn.execute("PRAGMA busy_timeout=5000")
-                cur = conn.execute(
-                    "INSERT OR IGNORE INTO seen_snapshots "
-                    "(snapshot_id, expires_at, consumed_at) VALUES (?, ?, ?)",
-                    (snapshot_id, float(expires_at), time.time()),
-                )
-                return cur.rowcount == 1
+            conn = self._connect()
+            conn.execute("PRAGMA busy_timeout=5000")
+            cur = conn.execute(
+                "INSERT OR IGNORE INTO seen_snapshots "
+                "(snapshot_id, expires_at, consumed_at) VALUES (?, ?, ?)",
+                (snapshot_id, float(expires_at), time.time()),
+            )
+            accepted = cur.rowcount == 1
+            conn.commit()
+            cur.close()
+            return accepted
         except sqlite3.Error as exc:
+            if conn is not None:
+                try:
+                    conn.rollback()
+                except sqlite3.Error:
+                    pass
             raise ReplayStoreError("replay store consume failed") from exc
+        finally:
+            if conn is not None:
+                conn.close()
 
     def prune_expired(self, now_s: float | None = None) -> int:
         cutoff = time.time() if now_s is None else now_s
@@ -74,15 +91,27 @@ class SQLiteReplayStore(ReplayStore):
             raise ReplayStoreError("prune cutoff must be numeric")
         if not math.isfinite(cutoff):
             raise ReplayStoreError("prune cutoff must be finite")
+        conn = None
         try:
-            with self._connect() as conn:
-                cur = conn.execute(
-                    "DELETE FROM seen_snapshots WHERE expires_at < ?",
-                    (float(cutoff),),
-                )
-                return cur.rowcount
+            conn = self._connect()
+            cur = conn.execute(
+                "DELETE FROM seen_snapshots WHERE expires_at < ?",
+                (float(cutoff),),
+            )
+            deleted = cur.rowcount
+            conn.commit()
+            cur.close()
+            return deleted
         except sqlite3.Error as exc:
+            if conn is not None:
+                try:
+                    conn.rollback()
+                except sqlite3.Error:
+                    pass
             raise ReplayStoreError("replay store prune failed") from exc
+        finally:
+            if conn is not None:
+                conn.close()
 
 
 class RedisReplayStore(ReplayStore):
