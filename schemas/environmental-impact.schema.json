@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AMR Environmental Impact Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "impactId",
+    "projectId",
+    "periodStart",
+    "periodEnd",
+    "metrics",
+    "evidence"
+  ],
+  "properties": {
+    "impactId": {
+      "type": "string"
+    },
+    "projectId": {
+      "type": "string"
+    },
+    "periodStart": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "periodEnd": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wasteRecoveredKg": {
+          "type": "number",
+          "minimum": 0
+        },
+        "usableMaterialKg": {
+          "type": "number",
+          "minimum": 0
+        },
+        "waterTreatedLiters": {
+          "type": "number",
+          "minimum": 0
+        },
+        "hectaresRestored": {
+          "type": "number",
+          "minimum": 0
+        },
+        "energyConsumedKwh": {
+          "type": "number",
+          "minimum": 0
+        },
+        "energyProducedKwh": {
+          "type": "number",
+          "minimum": 0
+        },
+        "grossRecoveredValue": {
+          "type": "number",
+          "minimum": 0
+        },
+        "operatingCost": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "uri",
+          "type"
+        ],
+        "properties": {
+          "uri": {
+            "type": "string",
+            "format": "uri"
+          },
+          "type": {
+            "enum": [
+              "sensor",
+              "invoice",
+              "custody_record",
+              "lab_report",
+              "photo",
+              "audit",
+              "other"
+            ]
+          },
+          "hash": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "foodSafetyClaim": {
+      "type": "object",
+      "properties": {
+        "claimed": {
+          "type": "boolean"
+        },
+        "labEvidenceUri": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        }
+      }
+    }
+  }
+}
