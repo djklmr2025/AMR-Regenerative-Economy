@@ -1,0 +1,27 @@
+version: "0.2"
+default_action: deny
+critical_actions:
+  infrastructure_change:
+    level: 3
+    requirements: [proposal, verification, human_approval, audit_log]
+  treasury_transfer:
+    level: 4
+    requirements: [proposal, independent_verification, human_approval, multi_authorization, post_execution_audit]
+  reserve_reclassification:
+    level: 4
+    requirements: [evidence, independent_verification, human_approval, multi_authorization]
+  mint_or_burn:
+    level: 4
+    requirements: [economic_impact_report, independent_verification, human_approval, multi_authorization]
+  private_key_export:
+    level: 5
+    permitted: false
+  seed_phrase_export:
+    level: 5
+    permitted: false
+  destructive_main_history_rewrite:
+    level: 5
+    permitted: false
+  irreversible_identity_deletion:
+    level: 5
+    requirements: [explicit_human_owner_authorization, legal_retention_check, independent_audit]
